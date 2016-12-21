@@ -1,0 +1,28 @@
+{
+  "name": "progressive-config",
+  "description": "Progressively merge configuration files",
+  "version": "0.0.1",
+  "dependencies": {
+    "handlebars": "^4.0.6",
+    "js-yaml": "^3.7.0",
+    "lodash": "^4.17.2"
+  },
+  "main": "progressive-config.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johncapehart/progressive-config.git"
+  },
+  "keywords": [
+    "configuration"
+  ],
+  "author": "John Capehart",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/johncapehart/progressive-config/issues"
+  },
+  "homepage": "https://github.com/johncapehart/progressive-config#readme"
+}
