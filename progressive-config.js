@@ -6,81 +6,158 @@ var path = require('path');
 var yaml = require('js-yaml');
 const Handlebars = require('handlebars');
 
+console.log("loading progressive-config.js")
+
 exports.default = function (initial, inputs, selectors, fileMerger, directoryMerger, templateFunction) {
-    // make sure result is a deep clone
-    var config = _.merge({}, initial);
-    config.__dirname = (config.__dirname || []);
-    config.__dirname.push(__dirname);
+  return exports.default2({
+    initial: initial,
+    inputs: inputs,
+    selectors: selectors,
+    fileMerger: fileMerger,
+    directoryMerger: directoryMerger,
+    templateFunction: templateFunction
+  });
+};
 
-    config.__inputs =  config.__inputs || [];
-    if (!!inputs) {
-        inputs = (typeof inputs === "object") ? inputs : [inputs];
-        config.__inputs.push(inputs);
-    }
+exports.default2 = function ({initial : initial, inputs: inputs, selectors: selectors, fileMerger: fileMerger, directoryMerger: directoryMerger, templateFunction: templateFunction}) {
+  // make sure result is a deep clone
+  var config = _.merge({}, initial);
+  config.__dirname = (config.__dirname || []);
+  config.__dirname.push(__dirname);
 
-    config.__selectors =  config.__selectors || [];
-    if (!!selectors) {
-        selectors = (typeof selectors === "object") ? selectors : [selectors];
-        config.__selectors.push(selectors);
-    }
-
-    function applyTemplate(c) {
-        var t = Handlebars.comiple(config);
-        t(config);
-    }
-
-    exports.defaultMerge = function (_o, _i) {
-        return _.merge({}, _o, _i);
-    };
-
-    exports.defaultDirectoryMerge = function (o, i) {
-        if (fs.existsSync(i)) {
-            var fstat = fs.statSync(i);
-            if (fstat.isDirectory()) {
-                var children = fs.readdirSync(i);
-                _.map(children, function (c) {
-                    var fpath = path.join(i, c);
-                    o = directoryMerger(o, fpath);
-                });
-                return o;
-            } else {
-                if (/config\.(js|json|yml)$/.test(i)) {
-                    console.log("Loading configuration from " + i);
-                    var j;
-                    if ((/\.yml$/.test(i))) {
-                        j = yaml.safeLoad(fs.readFileSync(i, 'utf8'));
-                    } else {
-                        j = require(i);
-                    }
-                    return fileMerger(o, j);
-                }
-            }
-        }
-        return o;
-    };
-
-    fileMerger = (fileMerger === undefined) ? exports.defaultMerge : fileMerger;
-    directoryMerger = (directoryMerger === undefined) ? exports.defaultDirectoryMerge : directoryMerger;
-    templateFunction = (templateFunction === undefined) ? applyTemplate : templateFunction;
-
-    // process only new directories
-    if (!!inputs) {
-        _.map(inputs, function (i) {
-            config = exports.defaultDirectoryMerge(config, i);
-        });
-    }
-
-    // process all selectors
-    _.map(config.__selectors, function (s1) {
-        _.map(s1, function (s2) {
-            config = _.merge(config, config[config[s2]]);
-        });
+  config.__inputs = config.__inputs || [];
+  config.__root = config.__root || config;
+  if (!!inputs) {
+    inputs = Array.isArray(inputs) ? inputs : [inputs];
+    _.map(inputs, function (i) {
+      config.__inputs.push(path.resolve(i));
     });
+  }
 
-    return config;
+  config.__selectors = config.__selectors || [];
+  if (!!selectors) {
+    selectors = Array.isArray(selectors) ? selectors : [selectors];
+    config.__selectors.push(selectors);
+  }
+
+  exports.defaultApplyTemplate = function (c) {
+    // make a template from the definitions node
+    if (!!c.definitions) {
+      var definitionsTemplate = Handlebars.compile(JSON.stringify(c.definitions));
+      // apply the whole configuration to the definitions template
+      var definitions = JSON.parse(definitionsTemplate(c));
+      // make a template from the whole configuration
+      var t = Handlebars.compile(JSON.stringify(c, function( key, value) {
+        if( key == '__root') { return null; }
+        return value;
+      }));
+      // apply the definitions to the whole configuration as a template
+      return JSON.parse(t(definitions));
+    } else {
+      return c;
+    }
+  };
+
+  exports.iterativelyApplyTemplate = function (c) {
+    var c0;
+    do {
+      c0 = c;
+      c = exports.defaultApplyTemplate(c0);
+    } while (!_.isEqual(c, c0));
+    return c;
+  };
+
+  exports.defaultFileMerger = function (_o, _i) {
+    return _.merge({}, _o, _i);
+  };
+
+  /*
+   // prove that arrays are not merged
+   var a = { a: [1,2,3], b: 0, c: 2};
+   var b = { a: [3,4,5,6], b: 1};
+   var c = _.merge(a,b); // returns "{\"a\":[3,4,5,6],\"b\":1,\"c\":2}"
+   */
+
+  exports.defaultDirectoryMerge = function (o, i) {
+    if (fs.existsSync(i)) {
+      var fstat = fs.statSync(i);
+      if (fstat.isDirectory()) {
+        var children = fs.readdirSync(i);
+        _.map(children, function (c) {
+          var fpath = path.join(i, c);
+          o = config.__directoryMerger(o, fpath);
+        });
+        return o;
+      } else {
+        if (/config\.(js|json|yml)$/.test(i)) {
+          console.log("Loading configuration from " + i);
+          var j;
+          if ((/\.yml$/.test(i))) {
+            j = yaml.safeLoad(fs.readFileSync(i, 'utf8'));
+          } else {
+            j = require(i);
+          }
+          return config.__fileMerger(o, j);
+        }
+      }
+    }
+    return o;
+  };
+
+  config.__fileMerger = (fileMerger === undefined) ? exports.defaultFileMerger : fileMerger;
+  config.__directoryMerger = (directoryMerger === undefined) ? exports.defaultDirectoryMerge : directoryMerger;
+  config.__templateFunction = (templateFunction === undefined) ? exports.defaultApplyTemplate : templateFunction;
+  config.__walkInputs = function (cb) {
+    var rinputs = this.__inputs.reverse();
+    return _.transform(rinputs, cb);
+  };
+
+  config.__getRelativePath = function (nodeName, fileName) {
+    var resultantPath = this[nodeName][fileName];
+    // check for relative path
+    if (path.resolve(resultantPath) !== path.normalize(resultantPath)) {
+      var result = this.__walkInputs(function(result, ith) {
+        var jobTemplatePath2 = path.join(ith, resultantPath);
+        if (fs.existsSync(jobTemplatePath2)) {
+          result.push(jobTemplatePath2);
+          return false;
+        }
+        jobTemplatePath2 = path.join(ith, nodeName, resultantPath);
+        if (fs.existsSync(jobTemplatePath2)) {
+          result.push(jobTemplatePath2);
+          return false;
+        }
+      });
+      if (!!result) {
+        return result[0];
+      }
+      return null;
+    } else {
+      return resultantPath
+    }
+  }
+
+  // process only new directories
+  if (!!inputs) {
+    _.map(inputs, function (i) {
+      config = exports.defaultDirectoryMerge(config, i);
+    });
+  }
+
+  // process all selectors
+  _.map(config.__selectors, function (s1) {
+    _.map(s1, function (s2) {
+      config = _.merge(config, config[config[s2]]);
+    });
+  });
+
+  if (!!config.__templateFunction) {
+    config = _.merge(config, config.__templateFunction(config));
+  }
+  return config;
 };
 
 exports.reload = function (config) {
-    //TODO: actually reload the config by iderateing over the __dirnames and inputs
-    return _.merge({}, config);
+  //TODO: actually reload the config by iderateing over the __dirnames and inputs
+  return _.merge({}, config);
 };
