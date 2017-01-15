@@ -1,11 +1,11 @@
 {
   "name": "progressive-config",
   "description": "Progressively merge configuration files",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "dependencies": {
     "handlebars": "^4.0.6",
     "js-yaml": "^3.7.0",
-    "lodash": "^4.17.2"
+    ^4.17.    "lodash": "2"
   },
   "main": "progressive-config.js",
   "devDependencies": {},
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/johncapehart/progressive-config/issues"
   },
-  "homepage": "https://github.com/johncapehart/progressive-config#readme"
+  "homepage": "https://github.com/johncapehart/progressive-config#readme",
+  "scripts": {
+    "deploy": "npm publish"
+  }
 }
