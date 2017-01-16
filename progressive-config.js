@@ -6,7 +6,11 @@ var path = require('path');
 var yaml = require('js-yaml');
 const Handlebars = require('handlebars');
 
-console.log("loading progressive-config.js")
+var localLog = console.log;
+if (!!process.console.file) {
+  localLog = function (thing) { process.console.file().info(thing); };
+}
+localLog("loading progressive-config.js")
 
 exports.default = function (initial, inputs, selectors, fileMerger, directoryMerger, templateFunction) {
   return exports.default2({
@@ -90,7 +94,7 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
         return o;
       } else {
         if (/config\.(js|json|yml)$/.test(i)) {
-          console.log("Loading configuration from " + i);
+          localLog("Loading configuration from " + i);
           var j;
           if ((/\.yml$/.test(i))) {
             j = yaml.safeLoad(fs.readFileSync(i, 'utf8'));
