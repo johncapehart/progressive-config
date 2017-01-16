@@ -1,3 +1,8 @@
+<a name="0.1.8"></a>
+## [0.1.8](https://github.com/johncapehart/progressive-config/compare/v0.1.7...v0.1.8) (2017-01-16)
+
+
+
 <a name="0.1.7"></a>
 ## [0.1.7](https://github.com/johncapehart/progressive-config/compare/v0.1.6...v0.1.7) (2017-01-16)
 
