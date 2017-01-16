@@ -8,9 +8,18 @@
     "lodash": "^4.17.2"
   },
   "main": "progressive-config.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-bump": "^0.8.0",
+    "grunt-conventional-changelog": "^6.1.0",
+    "grunt-conventional-github-releaser": "^1.0.0",
+    "grunt-eslint": "^19.0.0",
+    "grunt-npm": "0.0.2",
+    "load-grunt-tasks": "^3.5.2",
+    "npm-publish": "^0.4.7"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "npm publish"
   },
   "repository": {
     "type": "git",
@@ -25,7 +34,7 @@
     "url": "https://github.com/johncapehart/progressive-config/issues"
   },
   "homepage": "https://github.com/johncapehart/progressive-config#readme",
-  "scripts": {
-    "deploy": "npm publish"
-  }
+  "contributors": [
+    "johncapehart <john@johncapehart.com>"
+  ]
 }
