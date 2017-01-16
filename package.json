@@ -15,6 +15,7 @@
     "grunt-conventional-github-releaser": "^1.0.0",
     "grunt-eslint": "^19.0.0",
     "grunt-npm": "0.0.2",
+    "karma": "^1.4.0",
     "load-grunt-tasks": "^3.5.2",
     "npm-publish": "^0.4.7"
   },
