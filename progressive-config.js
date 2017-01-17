@@ -69,6 +69,17 @@ exports.default2 = function({
     config.__selectors.push(selectors);
   }
 
+  exports.defaultFilter = function(key, value) {
+    if (key === '__dynamic') {
+      return null;
+    }
+    return value;
+  }
+
+  exports.defaultStringify = function(c) {
+    return JSON.stringify(c, exports.defaultFilter);
+  }
+
   exports.defaultApplyTemplate = function(c) {
     // make a template from the definitions node
     if (!!c.definitions) {
@@ -76,12 +87,7 @@ exports.default2 = function({
       // apply the whole configuration to the definitions template
       var definitions = JSON.parse(definitionsTemplate(c));
       // make a template from the whole configuration
-      var t = Handlebars.compile(JSON.stringify(c, function(key, value) {
-        if (key === '__dynamic') {
-          return null;
-        }
-        return value;
-      }));
+      var t = Handlebars.compile(exports.defaultStringify(c));
       // apply the definitions to the whole configuration as a template
       return JSON.parse(t(definitions));
     } else {
@@ -135,6 +141,7 @@ exports.default2 = function({
     return o;
   };
 
+  // TODO: Put these functions in __dynamic node
   config.__fileMerger = (fileMerger === undefined) ? exports.defaultFileMerger : fileMerger;
   config.__directoryMerger = (directoryMerger === undefined) ? exports.defaultDirectoryMerge : directoryMerger;
   config.__templateFunction = (templateFunction === undefined) ? exports.defaultApplyTemplate : templateFunction;
@@ -166,7 +173,6 @@ exports.default2 = function({
     } else {
       return resultantPath;
     }
-    ;
   };
 
   // process only new directories
