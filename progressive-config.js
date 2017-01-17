@@ -5,6 +5,21 @@ var fs = require('fs');
 var path = require('path');
 var yaml = require('js-yaml');
 const Handlebars = require('handlebars');
+var uuid = require('node-uuid');
+
+Handlebars.registerHelper('helperMissing', function(/* [args, ] options */) {
+  var options = arguments[arguments.length - 1];
+  return options.name;
+});
+
+// called when the template contains {{uuid}}
+Handlebars.registerHelper("uuid", function(/* [args, ] options */) {
+  return uuid.v4();
+});
+
+var helpers = require('handlebars-helpers')({
+  handlebars: Handlebars
+});
 
 var localLog = console.log;
 if (!!process.console.file) {
@@ -30,7 +45,8 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
   config.__dirname.push(__dirname);
 
   config.__inputs = config.__inputs || [];
-  config.__root = config.__root || config;
+  config.__dynamic = config.__dynamic || {};
+  config.__dynamic.root = config.__dynamic.root || config;
   if (!!inputs) {
     inputs = Array.isArray(inputs) ? inputs : [inputs];
     _.map(inputs, function (i) {
@@ -52,7 +68,7 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
       var definitions = JSON.parse(definitionsTemplate(c));
       // make a template from the whole configuration
       var t = Handlebars.compile(JSON.stringify(c, function( key, value) {
-        if( key == '__root') { return null; }
+        if( key == '__dynamic') { return null; }
         return value;
       }));
       // apply the definitions to the whole configuration as a template
@@ -72,7 +88,8 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
   };
 
   exports.defaultFileMerger = function (_o, _i) {
-    return _.merge({}, _o, _i);
+    var o = _.merge({}, _o, _i);
+    return o;
   };
 
   /*
@@ -91,7 +108,6 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
           var fpath = path.join(i, c);
           o = config.__directoryMerger(o, fpath);
         });
-        return o;
       } else {
         if (/config\.(js|json|yml)$/.test(i)) {
           localLog("Loading configuration from " + i);
@@ -101,7 +117,7 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
           } else {
             j = require(i);
           }
-          return config.__fileMerger(o, j);
+          o = config.__fileMerger(o, j);
         }
       }
     }
@@ -156,7 +172,9 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
   });
 
   if (!!config.__templateFunction) {
-    config = _.merge(config, config.__templateFunction(config));
+    var templateResult = config.__templateFunction(config);
+    var templateResult2 = _.omit(templateResult, ['__dynamic', 'definitions']);
+    config = _.merge(config, templateResult2);
   }
   return config;
 };

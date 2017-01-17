@@ -54,12 +54,12 @@ module.exports = function (grunt) {
         'progressive-config.js'
       ]
     }
-  })
+  });
 
-  require('load-grunt-tasks')(grunt)
+  require('load-grunt-tasks')(grunt);
 
-  grunt.registerTask('test', ['karma'])
-  grunt.registerTask('default', ['eslint', 'test'])
+  grunt.registerTask('test', ['karma']);
+  grunt.registerTask('default', ['eslint', 'test']);
 
   grunt.registerTask('release', 'Bump the version and publish to NPM.', function (type) {
     grunt.task.run([
@@ -69,6 +69,6 @@ module.exports = function (grunt) {
       'bump-commit',
       'conventionalGithubReleaser',
       'npm-publish'
-    ])
-  })
-}
+    ]);
+  });
+};
