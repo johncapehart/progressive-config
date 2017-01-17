@@ -23,11 +23,13 @@ var helpers = require('handlebars-helpers')({
 
 var localLog = console.log;
 if (!!process.console.file) {
-  localLog = function (thing) { process.console.file().info(thing); };
+  localLog = function(thing) {
+    process.console.file().info(thing);
+  };
 }
-localLog("loading progressive-config.js")
+localLog("loading progressive-config.js");
 
-exports.default = function (initial, inputs, selectors, fileMerger, directoryMerger, templateFunction) {
+exports.default = function(initial, inputs, selectors, fileMerger, directoryMerger, templateFunction) {
   return exports.default2({
     initial: initial,
     inputs: inputs,
@@ -38,7 +40,14 @@ exports.default = function (initial, inputs, selectors, fileMerger, directoryMer
   });
 };
 
-exports.default2 = function ({initial : initial, inputs: inputs, selectors: selectors, fileMerger: fileMerger, directoryMerger: directoryMerger, templateFunction: templateFunction}) {
+exports.default2 = function({
+  initial : initial,
+  inputs: inputs,
+  selectors: selectors,
+  fileMerger: fileMerger,
+  directoryMerger: directoryMerger,
+  templateFunction: templateFunction
+}) {
   // make sure result is a deep clone
   var config = _.merge({}, initial);
   config.__dirname = (config.__dirname || []);
@@ -49,7 +58,7 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
   config.__dynamic.root = config.__dynamic.root || config;
   if (!!inputs) {
     inputs = Array.isArray(inputs) ? inputs : [inputs];
-    _.map(inputs, function (i) {
+    _.map(inputs, function(i) {
       config.__inputs.push(path.resolve(i));
     });
   }
@@ -60,15 +69,17 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
     config.__selectors.push(selectors);
   }
 
-  exports.defaultApplyTemplate = function (c) {
+  exports.defaultApplyTemplate = function(c) {
     // make a template from the definitions node
     if (!!c.definitions) {
       var definitionsTemplate = Handlebars.compile(JSON.stringify(c.definitions));
       // apply the whole configuration to the definitions template
       var definitions = JSON.parse(definitionsTemplate(c));
       // make a template from the whole configuration
-      var t = Handlebars.compile(JSON.stringify(c, function( key, value) {
-        if( key == '__dynamic') { return null; }
+      var t = Handlebars.compile(JSON.stringify(c, function(key, value) {
+        if (key === '__dynamic') {
+          return null;
+        }
         return value;
       }));
       // apply the definitions to the whole configuration as a template
@@ -78,7 +89,7 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
     }
   };
 
-  exports.iterativelyApplyTemplate = function (c) {
+  exports.iterativelyApplyTemplate = function(c) {
     var c0;
     do {
       c0 = c;
@@ -87,7 +98,7 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
     return c;
   };
 
-  exports.defaultFileMerger = function (_o, _i) {
+  exports.defaultFileMerger = function(_o, _i) {
     var o = _.merge({}, _o, _i);
     return o;
   };
@@ -99,12 +110,12 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
    var c = _.merge(a,b); // returns "{\"a\":[3,4,5,6],\"b\":1,\"c\":2}"
    */
 
-  exports.defaultDirectoryMerge = function (o, i) {
+  exports.defaultDirectoryMerge = function(o, i) {
     if (fs.existsSync(i)) {
       var fstat = fs.statSync(i);
       if (fstat.isDirectory()) {
         var children = fs.readdirSync(i);
-        _.map(children, function (c) {
+        _.map(children, function(c) {
           var fpath = path.join(i, c);
           o = config.__directoryMerger(o, fpath);
         });
@@ -127,12 +138,12 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
   config.__fileMerger = (fileMerger === undefined) ? exports.defaultFileMerger : fileMerger;
   config.__directoryMerger = (directoryMerger === undefined) ? exports.defaultDirectoryMerge : directoryMerger;
   config.__templateFunction = (templateFunction === undefined) ? exports.defaultApplyTemplate : templateFunction;
-  config.__walkInputs = function (cb) {
+  config.__walkInputs = function(cb) {
     var rinputs = this.__inputs.reverse();
     return _.transform(rinputs, cb);
   };
 
-  config.__getRelativePath = function (nodeName, fileName) {
+  config.__getRelativePath = function(nodeName, fileName) {
     var resultantPath = this[nodeName][fileName];
     // check for relative path
     if (path.resolve(resultantPath) !== path.normalize(resultantPath)) {
@@ -153,20 +164,21 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
       }
       return null;
     } else {
-      return resultantPath
+      return resultantPath;
     }
-  }
+    ;
+  };
 
   // process only new directories
   if (!!inputs) {
-    _.map(inputs, function (i) {
+    _.map(inputs, function(i) {
       config = exports.defaultDirectoryMerge(config, i);
     });
   }
 
   // process all selectors
-  _.map(config.__selectors, function (s1) {
-    _.map(s1, function (s2) {
+  _.map(config.__selectors, function(s1) {
+    _.map(s1, function(s2) {
       config = _.merge(config, config[config[s2]]);
     });
   });
@@ -179,7 +191,7 @@ exports.default2 = function ({initial : initial, inputs: inputs, selectors: sele
   return config;
 };
 
-exports.reload = function (config) {
-  //TODO: actually reload the config by iderateing over the __dirnames and inputs
+exports.reload = function(config) {
+  // TODO: actually reload the config by iterateing over the __dirnames and inputs
   return _.merge({}, config);
 };

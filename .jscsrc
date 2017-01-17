@@ -1,0 +1,8 @@
+{
+  "validateLineBreaks": false,
+  "validateIndentation": false,
+  "requireCapitalizedComments": false,
+  "requireCurlyBraces": false,
+  "requireTrailingComma": false,
+  "maximumLineLength":120
+}

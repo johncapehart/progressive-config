@@ -1,3 +1,13 @@
+<a name="0.1.14"></a>
+## [0.1.14](https://github.com/johncapehart/progressive-config/compare/v0.1.12...v0.1.14) (2017-01-17)
+
+
+
+<a name="0.1.13"></a>
+## [0.1.13](https://github.com/johncapehart/progressive-config/compare/v0.1.12...v0.1.13) (2017-01-17)
+
+
+
 <a name="0.1.12"></a>
 ## [0.1.12](https://github.com/johncapehart/progressive-config/compare/v0.1.11...v0.1.12) (2017-01-17)
 

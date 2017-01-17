@@ -37,6 +37,9 @@ module.exports = function (grunt) {
           'CHANGELOG.md',
           'README.md',
           'Gruntfile.js',
+          '.editorconfig',
+          '.jscsrc',
+          '.jshintrc',
           '.gitignore'
         ]
       }
