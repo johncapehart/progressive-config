@@ -7,14 +7,23 @@ var yaml = require('js-yaml');
 const Handlebars = require('handlebars');
 var uuid = require('node-uuid');
 
-Handlebars.registerHelper('helperMissing', function(/* [args, ] options */) {
-  var options = arguments[arguments.length - 1];
-  return options.name;
-});
-
 // called when the template contains {{uuid}}
 Handlebars.registerHelper("uuid", function(/* [args, ] options */) {
   return uuid.v4();
+});
+
+exports.dropMissingFieldNames = function(/* [args, ] options */) {
+  var options = arguments[arguments.length - 1];
+  return '';
+};
+
+exports.keepMissingFieldNames =function(/* [args, ] options */) {
+  var options = arguments[arguments.length - 1];
+  return '{{{' + options.name + '}}}';
+};
+
+var helpers = require('handlebars-helpers')({
+  handlebars: Handlebars
 });
 
 var helpers = require('handlebars-helpers')({
@@ -54,8 +63,8 @@ exports.default2 = function({
   config.__dirname.push(__dirname);
 
   config.__inputs = config.__inputs || [];
-  config.__dynamic = config.__dynamic || {};
-  config.__dynamic.root = config.__dynamic.root || config;
+  config.$dynamic = config.$dynamic || {};
+  config.$dynamic.root = config.$dynamic.root || config;
   if (!!inputs) {
     inputs = Array.isArray(inputs) ? inputs : [inputs];
     _.map(inputs, function(i) {
@@ -70,7 +79,7 @@ exports.default2 = function({
   }
 
   exports.defaultFilter = function(key, value) {
-    if (key === '__dynamic') {
+    if (key.lastIndexOf('$', 0) === 0) {
       return null;
     }
     return value;
@@ -83,6 +92,9 @@ exports.default2 = function({
   exports.defaultApplyTemplate = function(c) {
     // make a template from the definitions node
     if (!!c.definitions) {
+      // re-register this helper in case it has been changed
+      Handlebars.registerHelper('helperMissing', exports.keepMissingFieldNames);
+
       var definitionsTemplate = Handlebars.compile(JSON.stringify(c.definitions));
       // apply the whole configuration to the definitions template
       var definitions = JSON.parse(definitionsTemplate(c));
@@ -141,7 +153,7 @@ exports.default2 = function({
     return o;
   };
 
-  // TODO: Put these functions in __dynamic node
+  // TODO: Put these functions in $dynamic node
   config.__fileMerger = (fileMerger === undefined) ? exports.defaultFileMerger : fileMerger;
   config.__directoryMerger = (directoryMerger === undefined) ? exports.defaultDirectoryMerge : directoryMerger;
   config.__templateFunction = (templateFunction === undefined) ? exports.defaultApplyTemplate : templateFunction;
@@ -191,7 +203,7 @@ exports.default2 = function({
 
   if (!!config.__templateFunction) {
     var templateResult = config.__templateFunction(config);
-    var templateResult2 = _.omit(templateResult, ['__dynamic', 'definitions']);
+    var templateResult2 = _.omit(templateResult, ['$dynamic', 'definitions']);
     config = _.merge(config, templateResult2);
   }
   return config;
