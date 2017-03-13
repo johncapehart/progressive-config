@@ -11,17 +11,21 @@
   },
   "main": "progressive-config.js",
   "devDependencies": {
+    "expect.js": "^0.3.1",
     "grunt": "^1.0.1",
     "grunt-bump": "^0.8.0",
     "grunt-conventional-changelog": "^6.1.0",
     "grunt-conventional-github-releaser": "^1.0.0",
     "grunt-eslint": "^19.0.0",
+    "grunt-karma": "^2.0.0",
+    "grunt-mocha-test": "^0.13.2",
     "grunt-npm": "0.0.2",
     "karma": "^1.4.0",
     "load-grunt-tasks": "^3.5.2",
     "npm-publish": "^0.4.7"
   },
   "scripts": {
+    "test": "grunt test",
     "deploy": "npm publish"
   },
   "repository": {

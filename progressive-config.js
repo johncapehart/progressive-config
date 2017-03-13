@@ -31,7 +31,7 @@ var helpers = require('handlebars-helpers')({
 });
 
 var localLog = console.log;
-if (!!process.console.file) {
+if (!!process.console && !!process.console.file) {
   localLog = function(thing) {
     process.console.file().info(thing);
   };
@@ -134,7 +134,7 @@ exports.default2 = function({
       if (fstat.isDirectory()) {
         var children = fs.readdirSync(i);
         _.map(children, function(c) {
-          var fpath = path.join(i, c);
+          var fpath = path.resolve(i, c);
           o = config.__directoryMerger(o, fpath);
         });
       } else {
