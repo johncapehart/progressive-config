@@ -1,0 +1,20 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+- '4.5'
+install:
+- npm install
+before_script:
+- grunt test
+script:
+- npm run test
+deploy:
+  provider: npm
+  email: john.capehart@organicvalley.coop
+  api_key:
+    secure: keJ9oWu7VCf8kKpK3ISgZbYymU4XWeqwZKNoNw511g94U/aPqIgcFAqTbMuFbUWg513HooiZ0z6d3xlmSpU8rEPf/9IWtsCZHSf0MkX1kRVwUIrnU+s3jAnNNR67gvMtUu6J9upl/oM9bViyjV9QDWlH1bn4I81kkt4Gdp9Cj4SJ0DUQBDnWZZ1uIRXxgArApJgJzZRW5FTzQV9R5JaKLbRBvVnDYJW55sSkxg99Vy4mZ7A5mCHuPWh5AG6FWUAUQg0jhTIs0KMJdw2Vdcidk2DZ+To1bKJLVsziuqrDwOK0RME8QFHTqJOcvvYiaON526NMQb7qD/Ta6KPTukxtDv8sYxUu9bqE0ef7Dod1TY2DEdaSeVbTPFTbYEYu37LNrGb/2cbMoBs7s0RUOE6KON2lU+hFHhSpJywq+oUBQ22NkWvjhOo0EUv05Ekhh+kABttFiSZfKGuMiih5MgzCrCw06UHUvXDAhQuUwynbhg4+OfKzEGRDknz8qmaR9vI4KdK16CTYaHJ0q1iBiDO31gIsh84+vQi3V4RsQcw8nc0xAHQsfghAD3FDM55eZjAhltVVmlUocoYCdxks2ZcRWCOmQtA4jLRCvOALJcYfkKMUsogSiRLU21DHfaFrhFsWu3co1HFagvpEqtPBOCeDPedlICUNVBod5G4Ls8dmJ7E=
+  on:
+    branch: master,develop
+    tags: true
+    repo: johncapehart/progressive-config
