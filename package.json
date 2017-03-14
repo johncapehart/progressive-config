@@ -27,7 +27,8 @@
   },
   "scripts": {
     "test": "grunt test",
-    "publish": "grunt release"
+    "publish": "grunt release",
+    "setup": "travis setup npm"
   },
   "repository": {
     "type": "git",
