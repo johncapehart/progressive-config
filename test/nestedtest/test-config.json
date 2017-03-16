@@ -1,0 +1,10 @@
+{
+  "test":{
+    "A": 3,
+    "B": "{{tv}}",
+    "C": "test"
+  },
+  "definitions" : {
+    "tv": "testvalue3"
+  }
+}

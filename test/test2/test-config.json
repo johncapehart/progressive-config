@@ -1,0 +1,9 @@
+{
+  "test":{
+    "A": 2,
+    "B": "{{tv}}"
+  },
+  "definitions" : {
+    "tv": "testvalue2"
+  }
+}

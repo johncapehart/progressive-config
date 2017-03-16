@@ -1,9 +1,0 @@
-{
-  "test":{
-    "test1": 1,
-    "test2": "{{testkey}}"
-  },
-  "definitions" : {
-    "testkey": "testvalue"
-  }
-}

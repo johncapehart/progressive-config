@@ -30,13 +30,11 @@ var helpers = require('handlebars-helpers')({
   handlebars: Handlebars
 });
 
-var localLog = console.log;
+var localLog = console;
 if (!!process.console && !!process.console.file) {
-  localLog = function(thing) {
-    process.console.file().info(thing);
-  };
+  localLog = process.console.file;
 }
-localLog("loading progressive-config.js");
+localLog.info("loading progressive-config.js");
 
 exports.default = function(initial, inputs, selectors, fileMerger, directoryMerger, templateFunction) {
   return exports.default2({
@@ -139,12 +137,16 @@ exports.default2 = function({
         });
       } else {
         if (/config\.(js|json|yml)$/.test(i)) {
-          localLog("Loading configuration from " + i);
-          var j;
-          if ((/\.yml$/.test(i))) {
-            j = yaml.safeLoad(fs.readFileSync(i, 'utf8'));
-          } else {
-            j = require(i);
+          localLog.info("Loading configuration from " + i);
+          var j = {};
+          try {
+            if ((/\.yml$/.test(i))) {
+              j = yaml.safeLoad(fs.readFileSync(i, 'utf8'));
+            } else {
+              j = require(i);
+            }
+          } catch (err) {
+            localLog.warn(err);
           }
           o = config.__fileMerger(o, j);
         }
@@ -190,7 +192,11 @@ exports.default2 = function({
   // process only new directories
   if (!!inputs) {
     _.map(inputs, function(i) {
-      config = exports.defaultDirectoryMerge(config, i);
+      try {
+        config = exports.defaultDirectoryMerge(config, i);
+      } catch (err) {
+        localLog.warn(err);
+      }
     });
   }
 
