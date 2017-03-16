@@ -32,7 +32,7 @@ var helpers = require('handlebars-helpers')({
 
 var localLog = console;
 if (!!process.console && !!process.console.file) {
-  localLog = process.console.file;
+  localLog = process.console.file();
 }
 localLog.info("loading progressive-config.js");
 
