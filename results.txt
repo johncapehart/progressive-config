@@ -1,0 +1,19 @@
+
+[0m[0m
+[0m  progressive-config[0m
+[0m    one[0m
+loading progressive-config.js
+Loading configuration from C:\Source\progressive-config\test\test\test-config.json
+    [32m  √[0m[90m should load a configuration[0m[31m (474ms)[0m
+Loading configuration from C:\Source\progressive-config\test\test\test-config.json
+    [32m  √[0m[90m should apply a handlbars definition[0m
+Loading configuration from C:\Source\progressive-config\test\badtest\badtest-config.json
+Loading configuration from C:\Source\progressive-config\test\badtest\test-config.json
+    [32m  √[0m[90m should skip a bad file[0m
+Loading configuration from C:\Source\progressive-config\test\test\test-config.json
+Loading configuration from C:\Source\progressive-config\test\test2\test-config.json
+    [32m  √[0m[90m should overwrite with later values[0m
+
+
+[92m [0m[32m 4 passing[0m[90m (496ms)[0m
+
