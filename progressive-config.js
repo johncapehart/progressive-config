@@ -33,6 +33,9 @@ var helpers = require('handlebars-helpers')({
 var localLog = console;
 if (!!process.console && !!process.console.file) {
   localLog = process.console.file();
+  if (!localLog.warn) {
+    localLog.warn = localLog.warning;
+  }
 }
 localLog.info("loading progressive-config.js");
 
@@ -146,7 +149,7 @@ exports.default2 = function({
               j = require(i);
             }
           } catch (err) {
-            localLog.warn(err);
+            localLog.warn(err.message);
           }
           o = config.__fileMerger(o, j);
         }
@@ -195,7 +198,7 @@ exports.default2 = function({
       try {
         config = exports.defaultDirectoryMerge(config, i);
       } catch (err) {
-        localLog.warn(err);
+        localLog.warn(err.message);
       }
     });
   }
