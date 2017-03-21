@@ -17,3 +17,5 @@ deploy:
   on:
     repo: johncapehart/progressive-config
     branch: develop
+notifications:
+webhooks: https://outlook.office.com/webhook/60f9f5a0-5d47-4532-8d4d-78fa620097d2@aba8cd75-988b-44bc-adf8-b38c5d48c904/TravisCI/da5003cbf97d41c7b801171cdccf18cb/70471631-460c-4418-ae2b-ecacb1057285
