@@ -1,7 +1,7 @@
 {
   "name": "progressive-config",
   "description": "Progressively merge json or yaml configuration files",
-  "version": "0.1.22",
+  "version": "0.1.24",
   "dependencies": {
     "handlebars": "^4.0.6",
     "handlebars-helpers": "^0.7.7",

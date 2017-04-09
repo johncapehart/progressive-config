@@ -23,5 +23,11 @@ describe('progressive-config', function () {
       assert.equal(config.test.A, 2);
       assert.equal(config.test.C, "testC")
     });
+    it('should handle files before directories', function () {
+      var config = require('../progressive-config.js').default({}, "./test/nestedtest");
+      assert.equal(config.test.A, 4);
+      assert.equal(config.test.D, 44);
+    });
+
   })
 })

@@ -129,14 +129,35 @@ exports.default2 = function({
    var c = _.merge(a,b); // returns "{\"a\":[3,4,5,6],\"b\":1,\"c\":2}"
    */
 
+  exports.readDirectory = function(i) {
+    var children = fs.readdirSync(i);
+    var filesWithStats = [];
+    _.each(children, function(child) {
+      var fpath = path.resolve(i, child);
+      var fileStats = fs.statSync(fpath);
+
+      filesWithStats.push({
+        path: fpath,
+        isdir: fileStats.isDirectory() ? "b" : "a"
+      });
+      child = null;
+    });
+    var r = _.sortBy(filesWithStats, ['isdir']);
+    return _(filesWithStats)
+      .sortBy(['isdir', 'path'])
+      .map(function(f) {
+        return f.path;
+      })
+      .value();
+  };
+
   exports.defaultDirectoryMerge = function(o, i) {
     if (fs.existsSync(i)) {
       var fstat = fs.statSync(i);
       if (fstat.isDirectory()) {
-        var children = fs.readdirSync(i);
+        var children = exports.readDirectory(i);
         _.map(children, function(c) {
-          var fpath = path.resolve(i, c);
-          o = config.__directoryMerger(o, fpath);
+          o = config.__directoryMerger(o, c);
         });
       } else {
         if (/config\.(js|json|yml)$/.test(i)) {

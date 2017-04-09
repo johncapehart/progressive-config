@@ -2,7 +2,8 @@
   "test":{
     "A": 3,
     "B": "{{tv}}",
-    "C": "test"
+    "C": "test",
+    "D": 44
   },
   "definitions" : {
     "tv": "testvalue3"

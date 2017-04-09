@@ -1,7 +1,7 @@
 {
   "test":{
     "A": 4,
-    "B": "{{tv}}"
+    "B": "{{tv}}",
     "C": "test"
   },
   "definitions" : {
